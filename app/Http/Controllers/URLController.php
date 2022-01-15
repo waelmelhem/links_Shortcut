@@ -130,6 +130,8 @@ class URLController extends Controller
             abort(404, 'Page not found');
         }
     }
+
+    //show the link page wich contain the all links and the count of click for each country
     public function Dash_Link()
     {
         $countries=opened_link::select('country',DB::raw('count(*) as total'))
