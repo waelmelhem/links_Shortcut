@@ -21,7 +21,7 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
 })->name('dashboard');
 
 Route::post('/dashboard/add', [URLController::class, 'Dash_Add'])->name('dashboard.add');
-//My link routes 
+//user links routes 
 Route::get('/dashboard/links', [URLController::class, 'Dash_Link'])->name('dashboard.links');
 Route::get('/dashboard/edit/{id}', [URLController::class, 'Dash_Edit'])->name('dashboard.edit');
 Route::put('/dashboard/update/', [URLController::class, 'Dash_Update'])->name('dashboard.update');
@@ -49,8 +49,6 @@ Route::post('/password/check', [URLController::class, 'password_check'])->name('
 Route::get('/{id}', [URLController::class, 'get'])->name('get');
 Route::get('password/{id}', [URLController::class, 'password'])->name('password');
 
- 
-Route::get('get-address-from-ip', [GeoLocationController::class, 'index']);
 
 
 

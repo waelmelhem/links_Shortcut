@@ -9,7 +9,7 @@ use App\Models\opened_link;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\DB;
 
 class URLController extends Controller
 {
@@ -32,10 +32,13 @@ class URLController extends Controller
         ]);
         return redirect()->back()->with('New_Path', $new);
     }
-    public function get($id)
+    public function get(Request $req,$id)
     {
+        $cip = $req->ip();
+        $iptolocation = 'http://api.hostip.info/country.php?ip=' . $cip;
+        $creatorlocation = file_get_contents($iptolocation);
 
-        // echo Auth::user();
+        echo $creatorlocation;
         // exit;
         $link = URL::select('*')->where('new_path', '=', $id)->get();
         if (count($link) == 0) {
@@ -46,7 +49,7 @@ class URLController extends Controller
                     opened_link::insert(
                         [
                          'url_id'=>$link[0]->id,
-                         'country'=>"hello"
+                         'country'=>$creatorlocation,
                         ]
                     );
 
@@ -94,6 +97,9 @@ class URLController extends Controller
 
         if (($req->New_Path) != null) {
             $link = URL::select('*')->where('new_path', '=', $req->New_Path)->get();
+            $cip = $req->ip();
+            $iptolocation = 'http://api.hostip.info/country.php?ip=' . $cip;
+            $creatorlocation = file_get_contents($iptolocation);
 
             
             if (count($link) == 0) {
@@ -109,7 +115,7 @@ class URLController extends Controller
                             opened_link::insert(
                                 [
                                  'url_id'=>$link[0]->id,
-                                 'country'=>"hello"
+                                 'country'=>$creatorlocation,
                                 ]
                             );
         
@@ -126,9 +132,16 @@ class URLController extends Controller
     }
     public function Dash_Link()
     {
+        $countries=opened_link::select('country',DB::raw('count(*) as total'))
+        ->join('U_R_L_S', 'url_id', '=', 'U_R_L_S.id')
+        ->where('user_id','=',Auth::user()->id)
+        ->groupBy('country')
+        ->get();
+        // echo $countries;
+        // exit;
         $links = URL::select('*')->where('user_id', '=', Auth::user()->id)->get();
         // echo $links;
-        return view('dashboard.links', compact('links'));
+        return view('dashboard.links', compact('links','countries'));
     }
     public function Dash_Edit($id)
     {
